@@ -13,20 +13,17 @@ public class MyFiles implements FileVisitor<Object> {
 		// node belong to which directory
 		// printing type of node, for example
 		// input-output-network - dir
-		// src - dir
-		// telran - dir
-		// io - dir
-		// test - dir
-		// FileSystemTests.java - file
+		// 						src - dir
+		// 							telran - dir
+		// 								io - dir
+		// 									test - dir
+		// 										FileSystemTests.java - file
 		int offset = Path.of(path).toAbsolutePath().normalize().getNameCount();
-		try {
-			Files.walk(Path.of(path).toAbsolutePath().normalize(), maxDepth).forEach(p -> {
-				int depth = p.getNameCount();
-				System.out.println("   ".repeat(depth - offset) + p.getFileName() + " - " + getType(p));
-			});
-		} catch (IOException e) {
+		Files.walk(Path.of(path).toAbsolutePath().normalize(), maxDepth).forEach(p -> {
+			int depth = p.getNameCount();
+			System.out.println("   ".repeat(depth - offset) + p.getFileName() + " - " + getType(p));
+		});
 
-		}
 		System.out.println("============================================");
 	}
 
@@ -42,13 +39,13 @@ public class MyFiles implements FileVisitor<Object> {
 
 	@Override
 	public FileVisitResult visitFile(Object file, BasicFileAttributes attrs) throws IOException {
-		Path p = (Path) file;		
+		Path p = (Path) file;
 		int depth = p.getNameCount();
-		
-		if(attrs.isRegularFile()) {
-			System.out.println("   ".repeat(depth ) + p.getFileName() + " - File" );
-		}		
-		
+
+		if (attrs.isRegularFile()) {
+			System.out.println("   ".repeat(depth) + p.getFileName() + " - File");
+		}
+
 		return CONTINUE;
 	}
 
@@ -62,7 +59,7 @@ public class MyFiles implements FileVisitor<Object> {
 	public FileVisitResult postVisitDirectory(Object dir, IOException exc) throws IOException {
 		Path p = (Path) dir;
 		int depth = p.getNameCount();
-		System.out.println("   ".repeat(depth ) + p.getFileName() + " - Dir");
+		System.out.println("   ".repeat(depth) + p.getFileName() + " - Dir");
 		return CONTINUE;
 	}
 }

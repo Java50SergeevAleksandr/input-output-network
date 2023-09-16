@@ -5,7 +5,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import static java.nio.file.FileVisitResult.*;
 
-public class MyFiles implements FileVisitor<Object> {
+public class MyFiles implements FileVisitor<Path> {
 	public static void displayDir(String path, int maxDepth) throws IOException {
 		// TODO
 		// Throwing IllegalArgumentException in the case the given is not a directory
@@ -33,33 +33,31 @@ public class MyFiles implements FileVisitor<Object> {
 	}
 
 	@Override
-	public FileVisitResult preVisitDirectory(Object dir, BasicFileAttributes attrs) throws IOException {
+	public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 		return CONTINUE;
 	}
 
 	@Override
-	public FileVisitResult visitFile(Object file, BasicFileAttributes attrs) throws IOException {
-		Path p = (Path) file;
-		int depth = p.getNameCount();
+	public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {	
+		int depth = file.getNameCount();
 
 		if (attrs.isRegularFile()) {
-			System.out.println("   ".repeat(depth) + p.getFileName() + " - File");
+			System.out.println("   ".repeat(depth) + file.getFileName() + " - File");
 		}
 
 		return CONTINUE;
 	}
 
 	@Override
-	public FileVisitResult visitFileFailed(Object file, IOException exc) throws IOException {
+	public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
 		System.err.println(exc);
 		return CONTINUE;
 	}
 
 	@Override
-	public FileVisitResult postVisitDirectory(Object dir, IOException exc) throws IOException {
-		Path p = (Path) dir;
-		int depth = p.getNameCount();
-		System.out.println("   ".repeat(depth) + p.getFileName() + " - Dir");
+	public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {		
+		int depth = dir.getNameCount();
+		System.out.println("   ".repeat(depth) + dir.getFileName() + " - Dir");
 		return CONTINUE;
 	}
 }

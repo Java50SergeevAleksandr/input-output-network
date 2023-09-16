@@ -29,17 +29,16 @@ class FileSystemTests {
 		current = current.toAbsolutePath();
 		assertTrue(current.isAbsolute());
 		System.out.printf("current.getFileName() -> %s\n", current.getFileName());
-		current = current.normalize();
-		
+		current = current.normalize();		
 
 		System.out.printf("current.toRealPath() -> %s\n", current.toRealPath());
 		System.out.printf("current.getNameCount() -> %s\n", current.getNameCount());
 		System.out.printf("current.getName(5) -> %s\n", current.getName(5));
 		System.out.printf("current.getFileName() -> %s\n", current.getFileName());
-		 Files.list(current).map(p -> p.getFileName()).forEach(p ->
-		 System.out.println(p));
-		 Files.walk(current).map(p -> p.getFileName()).forEach(p ->
-		 System.out.println(p));
+//		 Files.list(current).map(p -> p.getFileName()).forEach(p ->
+//		 System.out.println(p));
+//		 Files.walk(current).map(p -> p.getFileName()).forEach(p ->
+//		 System.out.println(p));
 		Files.walk(current, 2).map(p -> p.getFileName()).forEach(p -> System.out.println(p));
 	}
 

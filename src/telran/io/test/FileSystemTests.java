@@ -20,7 +20,7 @@ class FileSystemTests {
 	}
 
 	@Test
-	@Disabled
+	//@Disabled
 	void test() throws IOException {
 		Path current = Path.of(".");
 		System.out.printf("current.getFileName() -> %s\n", current.getFileName());

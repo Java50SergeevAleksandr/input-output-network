@@ -20,10 +20,9 @@ public class CopyAppl {
 		// TODO write application for copying from source file to destination file
 		// Implementation Requirement: to use while cycle with read call
 		// main must not contain throws declaration
-		byte[] buffer = new byte[MB];
 
 		try {
-			copyAppl(args, buffer);
+			copyAppl(args);
 		} catch (RuntimeException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -31,9 +30,9 @@ public class CopyAppl {
 		}
 	}
 
-	private static void copyAppl(String[] args, byte[] buffer) throws Exception {
+	private static void copyAppl(String[] args) throws Exception {
 		checkAttributes(args);
-		Result res = copyWithBuffer(args, buffer);
+		Result res = copyWithBuffer(args);
 		printResult(res.bytesLenght(), args[0], args[1], res.time());
 	}
 
@@ -44,19 +43,17 @@ public class CopyAppl {
 
 	}
 
-	private static Result copyWithBuffer(String[] args, byte[] buffer) throws IOException, FileNotFoundException {
+	private static Result copyWithBuffer(String[] args) throws IOException, FileNotFoundException {
 		long start = System.currentTimeMillis();
 		float bytesLenght = 0;
-		float partLenght = 0;		
+		float partLenght = 0;
+		byte[] buffer = new byte[MB];
 
-		try (OutputStream output = new FileOutputStream(args[1])) {
-
-			try (InputStream input = new FileInputStream(args[0])) {
-
-				while ((partLenght = input.read(buffer)) > 0) {
-					bytesLenght += partLenght;
-					output.write(buffer, 0, (int) partLenght);
-				}
+		try (OutputStream output = new FileOutputStream(args[1]);
+				InputStream input = new FileInputStream(args[0])) {
+			while ((partLenght = input.read(buffer)) > 0) {
+				bytesLenght += partLenght;
+				output.write(buffer, 0, (int) partLenght);
 			}
 		}
 

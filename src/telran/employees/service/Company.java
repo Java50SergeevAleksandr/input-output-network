@@ -57,4 +57,18 @@ public interface Company {
 			throw new RuntimeException(e.toString());
 		}
 	}
+
+	List<DepartmentSalary> getDepartmentSalaryDistribution();
+
+	List<SalaryDistribution> getSalaryDistribution(int interval);
+
+	List<Employee> getEmployeesByDepartment(String department);
+
+	List<Employee> getEmployeesBySalary(int salaryFrom, int salaryTo);
+
+	List<Employee> getEmployeesByAge(int ageFrom, int ageTo);
+
+	Employee updateSalary(long id, int newSalary);
+
+	Employee updateDepartment(long id, String department);
 }

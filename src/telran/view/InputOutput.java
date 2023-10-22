@@ -20,7 +20,7 @@ public interface InputOutput {
 	}
 
 	default void writeObjectLine(Object object) {
-		writeLine(object + "\n");
+		writeLine(object.toString());
 	}
 
 	default <T> T readObject(String prompt, String errorPrompt, Function<String, T> mapper) {
@@ -45,43 +45,90 @@ public interface InputOutput {
 	}
 
 	default Integer readInt(String prompt, String errorPrompt, int min, int max) {
-		// TODO
-		return null;
+		Integer res;
+		boolean running;
+		do {
+			running = false;
+			res = readInt(prompt, errorPrompt);
+			if (res > max || res < min) {
+				writeLine(errorPrompt + ": min value = " + min + ", max value = " + max);
+				running = true;
+			}
+		} while (running);
+
+		return res;
 	}
 
 	default Long readLong(String prompt, String errorPrompt) {
-
 		return readObject(prompt, errorPrompt, Long::parseLong);
 	}
 
 	default Long readLong(String prompt, String errorPrompt, long min, long max) {
-		// TODO
-		return null;
+		Long res;
+		boolean running;
+		do {
+			running = false;
+			res = readLong(prompt, errorPrompt);
+			if (res > max || res < min) {
+				writeLine(errorPrompt + ": min value = " + min + ", max value = " + max);
+				running = true;
+			}
+		} while (running);
+
+		return res;
 	}
 
 	default Double readDouble(String prompt, String errorPrompt) {
-
 		return readObject(prompt, errorPrompt, Double::parseDouble);
 	}
 
 	default String readString(String prompt, String errorPrompt, Predicate<String> pattern) {
-		// TODO
-		return null;
+		String res;
+		boolean running;
+		do {
+			running = false;
+			res = readString(prompt);
+			if (!pattern.test(res)) {
+				writeLine(errorPrompt + ": String must must pass the condition");
+				running = true;
+			}
+		} while (running);
+
+		return res;
 	}
 
 	default String readString(String prompt, String errorPrompt, HashSet<String> options) {
-		// TODO
-		return null;
+		String res;
+		boolean running;
+		do {
+			running = false;
+			res = readString(prompt);
+			if (!options.contains(res)) {
+				writeLine(errorPrompt + ": String value must be one of:" + options);
+				running = true;
+			}
+		} while (running);
+
+		return res;
 	}
 
 	default LocalDate readIsoDate(String prompt, String errorPrompt) {
-
 		return readObject(prompt, errorPrompt, LocalDate::parse);
 	}
 
 	default LocalDate readIsoDate(String prompt, String errorPrompt, LocalDate min, LocalDate max) {
-		// TODO
-		return null;
+		LocalDate res;
+		boolean running;
+		do {
+			running = false;
+			res = readIsoDate(prompt, errorPrompt);
+			if (res.isAfter(max) || res.isBefore(min)) {
+				writeLine(errorPrompt + ": min value = " + min + ", max value = " + max);
+				running = true;
+			}
+		} while (running);
+
+		return res;
 	}
 
 }

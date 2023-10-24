@@ -32,7 +32,7 @@ class InputOutputTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		options.addAll(Set.of("QA", "Development", "Audit", "Accounting", "Management"));
-		Pattern pattern = Pattern.compile("[A-Z][a-z]+");
+		Pattern pattern = Pattern.compile("[A-Z][a-z]{2}");
 		predicate = s -> pattern.matcher(s).matches();
 	}
 
@@ -56,7 +56,7 @@ class InputOutputTest {
 	}
 
 	@Test
-	@Disabled
+	// @Disabled
 	void testReadEmployeeBySeparateField() {
 		Integer id = io.readInt("Enter employee <id>", "Wrong id", 10, 99);
 		io.writeLine("employee <id> " + id);
@@ -64,8 +64,8 @@ class InputOutputTest {
 		Integer salary = io.readInt("Enter employee salary", "Wrong value", 7000, 50000);
 		io.writeLine("employee salary " + salary);
 
-		LocalDate birthDate = io.readIsoDate("Enter employee birth date", "Wrong date", LocalDate.parse("1950-12-31"),
-				LocalDate.parse("2003-12-31"));
+		LocalDate birthDate = io.readIsoDate("Enter birthdate in ISO (YYYY-MM-DD) format", "Wrong date",
+				LocalDate.parse("1950-12-31"), LocalDate.parse("2003-12-31"));
 		io.writeLine("employee birth date " + birthDate);
 
 		String department = io.readString("Enter employee department", "Wrong department", options);
@@ -75,7 +75,6 @@ class InputOutputTest {
 		io.writeLine("employee name " + name);
 
 		io.writeObjectLine(new Employee(id, name, department, salary, birthDate));
-		// name - more than two letters where first one is a capital
 
 	}
 

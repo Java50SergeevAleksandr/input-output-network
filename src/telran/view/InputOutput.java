@@ -45,18 +45,13 @@ public interface InputOutput {
 	}
 
 	default Integer readInt(String prompt, String errorPrompt, int min, int max) {
-		Integer res;
-		boolean running;
-		do {
-			running = false;
-			res = readInt(prompt, errorPrompt);
+		return readObject(String.format("%s(%d - %d)", prompt, min, max), errorPrompt, str -> {
+			Integer res = Integer.parseInt(str);
 			if (res > max || res < min) {
-				writeLine(errorPrompt + ": min value = " + min + ", max value = " + max);
-				running = true;
+				throw new IllegalArgumentException("min value = " + min + ", max value = " + max);
 			}
-		} while (running);
-
-		return res;
+			return res;
+		});
 	}
 
 	default Long readLong(String prompt, String errorPrompt) {
@@ -64,52 +59,30 @@ public interface InputOutput {
 	}
 
 	default Long readLong(String prompt, String errorPrompt, long min, long max) {
-		Long res;
-		boolean running;
-		do {
-			running = false;
-			res = readLong(prompt, errorPrompt);
+		return readObject(String.format("%s(%d - %d)", prompt, min, max), errorPrompt, str -> {
+			Long res = Long.parseLong(str);
 			if (res > max || res < min) {
-				writeLine(errorPrompt + ": min value = " + min + ", max value = " + max);
-				running = true;
+				throw new IllegalArgumentException("min value = " + min + ", max value = " + max);
 			}
-		} while (running);
-
-		return res;
+			return res;
+		});
 	}
 
 	default Double readDouble(String prompt, String errorPrompt) {
 		return readObject(prompt, errorPrompt, Double::parseDouble);
 	}
 
-	default String readString(String prompt, String errorPrompt, Predicate<String> pattern) {
-		String res;
-		boolean running;
-		do {
-			running = false;
-			res = readString(prompt);
-			if (!pattern.test(res)) {
-				writeLine(errorPrompt + ": String must must pass the condition");
-				running = true;
+	default String readString(String prompt, String errorPrompt, Predicate<String> predicate) {
+		return readObject(prompt, errorPrompt, str -> {
+			if (!predicate.test(str)) {
+				throw new IllegalArgumentException("String must must pass the condition");
 			}
-		} while (running);
-
-		return res;
+			return str;
+		});
 	}
 
 	default String readString(String prompt, String errorPrompt, HashSet<String> options) {
-		String res;
-		boolean running;
-		do {
-			running = false;
-			res = readString(prompt);
-			if (!options.contains(res)) {
-				writeLine(errorPrompt + ": String value must be one of:" + options);
-				running = true;
-			}
-		} while (running);
-
-		return res;
+		return readString(prompt, errorPrompt, options::contains);
 	}
 
 	default LocalDate readIsoDate(String prompt, String errorPrompt) {
@@ -117,18 +90,14 @@ public interface InputOutput {
 	}
 
 	default LocalDate readIsoDate(String prompt, String errorPrompt, LocalDate min, LocalDate max) {
-		LocalDate res;
-		boolean running;
-		do {
-			running = false;
-			res = readIsoDate(prompt, errorPrompt);
+		return readObject(prompt, errorPrompt, str -> {
+			LocalDate res = LocalDate.parse(str);
 			if (res.isAfter(max) || res.isBefore(min)) {
-				writeLine(errorPrompt + ": min value = " + min + ", max value = " + max);
-				running = true;
+				throw new IllegalArgumentException(
+						String.format("Date should be in the range from %s to %s", min, max));
 			}
-		} while (running);
-
-		return res;
+			return res;
+		});
 	}
 
 }

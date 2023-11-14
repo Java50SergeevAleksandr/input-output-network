@@ -10,7 +10,7 @@ public class Menu implements Item {
 	private ArrayList<Item> items;
 	private String name;
 
-	Menu(String name, ArrayList<Item> items) {
+	public Menu(String name, ArrayList<Item> items) {
 		this.items = items;
 		this.name = name;
 	}

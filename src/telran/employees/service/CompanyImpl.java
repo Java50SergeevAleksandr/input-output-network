@@ -122,8 +122,10 @@ public class CompanyImpl implements Company {
 	@Override
 	public Employee updateSalary(long id, int newSalary) {
 		Employee empl = removeEmployee(id);
-		Employee newEmpl = new Employee(id, empl.name(), empl.department(), newSalary, empl.birthDate());
-		addEmployee(newEmpl);
+		if (empl != null) {
+			Employee newEmpl = new Employee(id, empl.name(), empl.department(), newSalary, empl.birthDate());
+			addEmployee(newEmpl);
+		}
 		return empl;
 
 	}
@@ -131,8 +133,10 @@ public class CompanyImpl implements Company {
 	@Override
 	public Employee updateDepartment(long id, String department) {
 		Employee empl = removeEmployee(id);
-		Employee newEmpl = new Employee(id, empl.name(), department, empl.salary(), empl.birthDate());
-		addEmployee(newEmpl);
+		if (empl != null) {
+			Employee newEmpl = new Employee(id, empl.name(), department, empl.salary(), empl.birthDate());
+			addEmployee(newEmpl);
+		}
 		return empl;
 	}
 }

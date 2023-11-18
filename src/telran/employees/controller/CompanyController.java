@@ -17,8 +17,8 @@ public class CompanyController {
 	private static final HashSet<String> SET_DEPARTMENTS = new HashSet<String>(List.of(DEPARTMENTS));
 	private static final int MIN_SALARY = 7000;
 	private static final int MAX_SALARY = 50000;
-	private static final int MIN_YEAR = 1950;
-	private static final int MAX_YEAR = 2001;
+	private static final int MIN_AGE = 18;
+	private static final int MAX_AGE = 75;
 	private static Company company;
 
 	public static ArrayList<Item> getItems(Company company) {
@@ -31,7 +31,7 @@ public class CompanyController {
 	private static List<Item> getItemsList() {
 
 		return List.of(Item.of("Hire new Employee", CompanyController::addEmployee),
-				Item.of("Fire  Employee", CompanyController::removeEmployee),
+				Item.of("Fire Employee", CompanyController::removeEmployee),
 				Item.of("Display data of Employee", CompanyController::getEmployee),
 				Item.of("Display data of all Employees", CompanyController::getEmployees),
 				Item.of("Distribution of salary by departments", CompanyController::getDepartmentSalaryDistribution),
@@ -44,92 +44,107 @@ public class CompanyController {
 	}
 
 	static void addEmployee(InputOutput io) {
-		long id = io.readLong("Enter employee identity", "Wrong identity", MIN_ID, MAX_ID);
+		long id = getID(io);
 		String name = io.readString("Enter name", "Wrong name", str -> str.matches("[A-Z][a-z]{2,}"));
-		String department = io.readString("Enter department " + Arrays.deepToString(DEPARTMENTS), "Wrong department",
-				SET_DEPARTMENTS);
-		int salary = io.readInt("Enter Salary", "Wrong salary", MIN_SALARY, MAX_SALARY);
+		String department = getDepartment(io);
+		int salary = getSalary(io);
 		LocalDate birthDate = io.readIsoDate("Enter birtdate in ISO format", "Wrong birthdate",
-				LocalDate.of(MIN_YEAR, 1, 1), LocalDate.of(MAX_YEAR, 12, 31));
+				LocalDate.now().minusYears(MAX_AGE), LocalDate.now().minusYears(MIN_AGE).minusDays(1));
 		Employee empl = new Employee(id, name, department, salary, birthDate);
 		boolean res = company.addEmployee(empl);
 		io.writeLine(res ? "Employee has been added" : "Employee already exists");
 	}
 
 	static void removeEmployee(InputOutput io) {
-		long id = io.readLong("Enter employee ID to remove", "Wrong identity", MIN_ID, MAX_ID);
+		long id = getID(io);
 		Employee res = company.removeEmployee(id);
-		io.writeLine(res == null ? "Employee does not exist" : "Employee has been removed");
+		writeResut(io, res, "Employee has been removed");
 	}
 
 	static void getEmployee(InputOutput io) {
-		long id = io.readLong("Enter employee ID", "Wrong identity", MIN_ID, MAX_ID);
+		long id = getID(io);
 		Employee res = company.getEmployee(id);
-		io.writeObjectLine(res == null ? "Employee does not exist" : res);
+		writeResut(io, res, res.toString());
 	}
 
 	static void getEmployees(InputOutput io) {
 		List<Employee> employees = company.getEmployees();
-		if (employees.isEmpty()) {
-			io.writeLine("No active Employees");
-		} else {
-			displayResult(io, employees);
-		}
-
+		displayListResult(io, employees);
 	}
 
 	static void getDepartmentSalaryDistribution(InputOutput io) {
 		List<DepartmentSalary> salary = company.getDepartmentSalaryDistribution();
-		displayResult(io, salary);
+		displayListResult(io, salary);
 	}
 
 	static void getSalaryDistribution(InputOutput io) {
 		int interval = io.readInt("Enter interval", "Wrong value");
 		List<SalaryDistribution> salary = company.getSalaryDistribution(interval);
-		displayResult(io, salary);
+		displayListResult(io, salary);
+
 	}
 
 	static void getEmployeesByDepartment(InputOutput io) {
-		String dep = io.readString("Enter department" + Arrays.deepToString(DEPARTMENTS), "Wrong department",
-				SET_DEPARTMENTS);
+		String dep = getDepartment(io);
 		List<Employee> listOfEmpl = company.getEmployeesByDepartment(dep);
-		displayResult(io, listOfEmpl);
+		displayListResult(io, listOfEmpl);
 	}
 
 	static void getEmployeesBySalary(InputOutput io) {
-		int min = io.readInt("Enter min salary", "Wrong value", MIN_SALARY, MAX_SALARY);
-		int max = io.readInt("Enter max salary", "Wrong value", MIN_SALARY, MAX_SALARY);
+		int min = getSalary(io);
+		int max = getSalary(io);
 		List<Employee> listOfEmpl = company.getEmployeesBySalary(min, max);
-		displayResult(io, listOfEmpl);
+		displayListResult(io, listOfEmpl);
 	}
 
 	static void getEmployeesByAge(InputOutput io) {
-		int min = io.readInt("Enter min age in years ", "Wrong value", LocalDate.now().getYear() - MAX_YEAR,
-				LocalDate.now().getYear() - MIN_YEAR);
-		int max = io.readInt("Enter max age in years ", "Wrong value", LocalDate.now().getYear() - MAX_YEAR,
-				LocalDate.now().getYear() - MIN_YEAR);
-		List<Employee> listOfEmpl = company.getEmployeesByAge(min, max);
-		displayResult(io, listOfEmpl);
+		int minAge = io.readInt("Enter min age in years ", "Wrong value", MIN_AGE, MAX_AGE);
+		int maxAge = io.readInt("Enter max age in years ", "Wrong value", minAge, MAX_AGE);
+		List<Employee> listOfEmpl = company.getEmployeesByAge(minAge, maxAge);
+		displayListResult(io, listOfEmpl);
 	}
 
 	static void updateSalary(InputOutput io) {
-		long id = io.readLong("Enter employee ID", "Wrong identity", MIN_ID, MAX_ID);
-		int newSalary = io.readInt("Enter new Salary", "Wrong salary", MIN_SALARY, MAX_SALARY);
+		long id = getID(io);
+		int newSalary = getSalary(io);
 		Employee empl = company.updateSalary(id, newSalary);
-		io.writeLine(empl == null ? "Employee does not exist"
-				: "Employee salary has been updated: " + company.getEmployee(id));
+		writeResut(io, empl, "Employee salary has been updated: " + company.getEmployee(id));
 	}
 
 	static void updateDepartment(InputOutput io) {
-		long id = io.readLong("Enter employee ID", "Wrong identity", MIN_ID, MAX_ID);
-		String newDep = io.readString("Enter new Department" + Arrays.deepToString(DEPARTMENTS), "Wrong department",
-				SET_DEPARTMENTS);
+		long id = getID(io);
+		String newDep = getDepartment(io);
 		Employee empl = company.updateDepartment(id, newDep);
-		io.writeLine(empl == null ? "Employee does not exist"
-				: "Employee salary has been updated: " + company.getEmployee(id));
+		writeResut(io, empl, "Employee Department has been updated: " + company.getEmployee(id));
 	}
 
-	private static <T> void displayResult(InputOutput io, List<T> list) {
-		list.forEach(s -> io.writeObjectLine(s));
+	private static String getDepartment(InputOutput io) {
+		return io.readString("Enter new Department" + Arrays.deepToString(DEPARTMENTS), "Wrong department",
+				SET_DEPARTMENTS);
+	}
+
+	private static long getID(InputOutput io) {
+		return io.readLong("Enter employee ID", "Wrong identity", MIN_ID, MAX_ID);
+	}
+
+	private static Integer getSalary(InputOutput io) {
+		return io.readInt("Enter new Salary", "Wrong salary", MIN_SALARY, MAX_SALARY);
+	}
+
+	private static void writeResut(InputOutput io, Employee res, String message) {
+		boolean isNoExist = checkEmployeeExist(res);
+		io.writeLine(isNoExist ? "Employee does not exist" : message);
+	}
+
+	private static boolean checkEmployeeExist(Employee res) {
+		return res == null;
+	}
+
+	private static <T> void displayListResult(InputOutput io, List<T> list) {
+		if (list.isEmpty()) {
+			io.writeLine("No data matching the request");
+		} else {
+			list.forEach(io::writeObjectLine);
+		}
 	}
 }

@@ -60,7 +60,7 @@ public class CompanyImpl implements Company {
 	// ShallowCopy
 	@Override
 	public List<Employee> getEmployees() {
-		return employees.values().stream().toList();
+		return employees.values().stream().sorted(Comparator.comparingLong(Employee::id)).toList();
 		// return new ArrayList<>(employees.values());
 	}
 

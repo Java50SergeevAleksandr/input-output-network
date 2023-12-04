@@ -1,8 +1,6 @@
 package telran.nubersServer.app;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import telran.net.TcpClientHandler;
 import telran.view.*;
@@ -14,38 +12,38 @@ public class NumbersDatesTcpClientAppl {
 	public static void main(String[] args) {
 		InputOutput io = new SystemInputOutput();
 		try (TcpClientHandler handler = new TcpClientHandler(HOST, PORT);) {
-			Menu menu = new Menu("Number Operations Client",
-					Item.of("Add", ioM -> runProtocol(NumbersDatesProtocol.getAddProtocol(), ioM, handler)),
-					Item.of("Subtract", ioM -> runProtocol(NumbersDatesProtocol.getSubtractProtocol(), ioM, handler)),
-					Item.of("Divide", ioM -> runProtocol(NumbersDatesProtocol.getDivideProtocol(), ioM, handler)),
-					Item.of("Multiply", ioM -> runProtocol(NumbersDatesProtocol.getMultiplyProtocol(), ioM, handler)),
-					Item.of("Create Error - Wrong Type", ioM -> runProtocol("wrongType", ioM, handler)),
-					Item.of("Create Error - Wrong Data",
-							ioM -> runErrorProtocol(NumbersDatesProtocol.getMultiplyProtocol(), ioM, handler)),
-					Item.of("Exit", ioM -> {
-						try {
-							handler.close();
-						} catch (IOException e) {
-						}
-					}, true));
+			Menu menu = new Menu("Number Operations Client", getItems(handler));
+					
 			menu.perform(io);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	private static Item[] getItems(TcpClientHandler handler) {
+		Item items[] = { NumbersOperationsMenu.getNumberOperationsItem("Number Operations", handler),
+				DatesOperationsMenu.getDateOperationsItem("Date Operations", handler),
+				Item.of("Create Error - Wrong Type", ioM -> runProtocol("wrongType", ioM, handler)),
+				Item.of("Create Error - Wrong Data",
+						ioM -> runErrorProtocol(NumbersDatesProtocol.getMultiplyProtocol(), ioM, handler)),
+				Item.of("Exit", io -> {
+					try {
+						handler.close();
+					} catch (IOException e) {
+						throw new RuntimeException(e.getMessage());
+					}
+				}, true) };
+		return items;
+	}
+
 	private static void runProtocol(String string, InputOutput io, TcpClientHandler handler) {
-		Double response = handler.send(string, new ArrayList<>(Arrays.asList(getOperands(io))));
+		double response = handler.send(string, new double[] {});
 		io.writeObjectLine(response);
 	}
 
 	private static void runErrorProtocol(String string, InputOutput io, TcpClientHandler handler) {
-		Double response = handler.send(string, "");
+		double response = handler.send(string, "");
 		io.writeObjectLine(response);
 	}
 
-	private static Double[] getOperands(InputOutput io) {
-		return new Double[] { io.readDouble("Enter first number", "Wrong number"),
-				io.readDouble("Enter second number", "Wrong number") };
-	}
 }

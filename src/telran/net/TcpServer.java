@@ -2,7 +2,7 @@ package telran.net;
 
 import java.net.*;
 
-public class TcpServer implements Runnable {
+public class TcpServer implements Runnable, AutoCloseable {
 	private int port;
 	private ApplProtocol protocol;
 	private ServerSocket serverSocket;
@@ -19,7 +19,7 @@ public class TcpServer implements Runnable {
 		try {
 			while (true) {
 				Socket socket = serverSocket.accept();
-				TcpClientServer client = new TcpClientServer(socket, protocol);
+				ClientSessionHandler client = new ClientSessionHandler(socket, protocol);
 				System.out.println("Client " + socket.getRemoteSocketAddress() + " is connected");
 				client.run();
 
@@ -29,6 +29,11 @@ public class TcpServer implements Runnable {
 			throw new RuntimeException(e.toString());
 		}
 
+	}
+
+	@Override
+	public void close() throws Exception {
+		serverSocket.close();
 	}
 
 }

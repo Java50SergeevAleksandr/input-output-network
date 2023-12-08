@@ -3,22 +3,20 @@ package telran.net;
 import java.net.*;
 import java.io.*;
 
-public class TcpClientServer implements Runnable {
-	Socket socket;
-	ObjectInputStream reader;
-	ObjectOutputStream writer;
+public class ClientSessionHandler implements Runnable {
+	final Socket socket;
 	ApplProtocol protocol;
 
-	public TcpClientServer(Socket socket, ApplProtocol protocol) throws Exception {
+	public ClientSessionHandler(Socket socket, ApplProtocol protocol) throws Exception {
 		this.socket = socket;
 		this.protocol = protocol;
-		reader = new ObjectInputStream(socket.getInputStream());
-		writer = new ObjectOutputStream(socket.getOutputStream());
 	}
 
 	@Override
 	public void run() {
-		try {
+		try (socket;
+				ObjectInputStream reader = new ObjectInputStream(socket.getInputStream());
+				ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream());) {
 			while (true) {
 				Request request = (Request) reader.readObject();
 				Response response = protocol.getResponse(request);

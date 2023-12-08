@@ -16,8 +16,9 @@ public class TcpClientHandler implements Closeable, NetworkHandler {
 
 	@Override
 	public void close() throws IOException {
+		reader.close();
+		writer.close();
 		socket.close();
-
 	}
 
 	@SuppressWarnings("unchecked")

@@ -22,15 +22,15 @@ public class ClientSessionHandler implements Runnable {
 				Request request = (Request) reader.readObject();
 				Response response = protocol.getResponse(request);
 				writer.writeObject(response);
-				System.out.println("Server sent a response --" + response.toString() + "-- to client"
-						+ socket.getRemoteSocketAddress());
+				System.out.println(
+						"Server sent a response --" + response + "-- to client" + socket.getRemoteSocketAddress());
 				writer.reset();
 			}
 
 		} catch (EOFException e) {
-			System.out.println("Client closed connection");
+			System.out.println("Client " + socket.getRemoteSocketAddress() + " closed connection");
 		} catch (Exception e) {
-			System.out.println("Abnormal closing connection");
+			System.out.println("Abnormal closing connection, client " + socket.getRemoteSocketAddress());
 		}
 
 	}

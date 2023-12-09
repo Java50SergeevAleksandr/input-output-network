@@ -11,63 +11,7 @@ import telran.net.Response;
 import telran.net.ResponseCode;
 
 public class CompanyProtocol implements ApplProtocol {
-	private static final String EMPLOYEE_SALARY_UPDATE = "employee/salary/update";
-	private static final String EMPLOYEES_ALL = "employees/all";
-	private static final String EMPLOYEE_GET = "employee/get";
-	private static final String EMPLOYEE_ADD = "employee/add";
-	private static final String WRONG_TYPE = "Wrong type from request";
-	private static final String EMPLOYEE_REMOVE = "employee/remove";
-	private static final String EMPLOYEE_DEP_SALARY_DISTR = "employee/department/salaryDistribution";
-	private static final String EMPLOYEE_SALARY_DISTR = "employee/salary/distribution";
-	private static final String EMPLOYEE_GET_BY_DEP = "employee/getBydepartment";
-	private static final String EMPLOYEE_GET_BY_SALARY = "employee/getBySalary";
-	private static final String EMPLOYEE_GET_BY_AGE = "employee/getByAge";
-	private static final String EMPLOYEE_DEP_UPDATE = "employee/department/update";
 	private Company company;
-
-	public static String employeeSalaryUpdate() {
-		return EMPLOYEE_SALARY_UPDATE;
-	}
-
-	public static String employeesAll() {
-		return EMPLOYEES_ALL;
-	}
-
-	public static String employeeGet() {
-		return EMPLOYEE_GET;
-	}
-
-	public static String employeeAdd() {
-		return EMPLOYEE_ADD;
-	}
-
-	public static String employeeRemove() {
-		return EMPLOYEE_REMOVE;
-	}
-
-	public static String employeesDepartmentSalaryDistribution() {
-		return EMPLOYEE_DEP_SALARY_DISTR;
-	}
-
-	public static String employeesSalaryDistribution() {
-		return EMPLOYEE_SALARY_DISTR;
-	}
-
-	public static String employeesGetByDepartment() {
-		return EMPLOYEE_GET_BY_DEP;
-	}
-
-	public static String employeesGetBySalary() {
-		return EMPLOYEE_GET_BY_SALARY;
-	}
-
-	public static String employeesGetByAge() {
-		return EMPLOYEE_GET_BY_AGE;
-	}
-
-	public static String employeesDepartmentUpdate() {
-		return EMPLOYEE_DEP_UPDATE;
-	}
 
 	public CompanyProtocol(Company company) {
 		this.company = company;
@@ -81,20 +25,20 @@ public class CompanyProtocol implements ApplProtocol {
 		Serializable responseData;
 		try {
 			responseData = switch (requestType) {
-			case EMPLOYEE_ADD -> employee_add(requestData);
-			case EMPLOYEE_REMOVE -> employee_remove(requestData);
-			case EMPLOYEE_GET -> employee_get(requestData);
-			case EMPLOYEES_ALL -> employees_all(requestData);
-			case EMPLOYEE_SALARY_UPDATE -> employee_salary_update(requestData);
-			case EMPLOYEE_DEP_SALARY_DISTR -> employee_department_salaryDistribution(requestData);
-			case EMPLOYEE_DEP_UPDATE -> employee_department_update(requestData);
-			case EMPLOYEE_GET_BY_AGE -> employee_get_byAge(requestData);
-			case EMPLOYEE_GET_BY_SALARY -> employee_get_bySalary(requestData);
-			case EMPLOYEE_GET_BY_DEP -> employee_get_byDepartment(requestData);
-			case EMPLOYEE_SALARY_DISTR -> employee_salary_distribution(requestData);
-			default -> WRONG_TYPE;
+			case CompanyApi.EMPLOYEE_ADD -> employee_add(requestData);
+			case CompanyApi.EMPLOYEE_REMOVE -> employee_remove(requestData);
+			case CompanyApi.EMPLOYEE_GET -> employee_get(requestData);
+			case CompanyApi.EMPLOYEES_ALL -> employees_all(requestData);
+			case CompanyApi.EMPLOYEE_SALARY_UPDATE -> employee_salary_update(requestData);
+			case CompanyApi.EMPLOYEE_DEP_SALARY_DISTR -> employee_department_salaryDistribution(requestData);
+			case CompanyApi.EMPLOYEE_DEP_UPDATE -> employee_department_update(requestData);
+			case CompanyApi.EMPLOYEE_GET_BY_AGE -> employee_get_byAge(requestData);
+			case CompanyApi.EMPLOYEE_GET_BY_SALARY -> employee_get_bySalary(requestData);
+			case CompanyApi.EMPLOYEE_GET_BY_DEP -> employee_get_byDepartment(requestData);
+			case CompanyApi.EMPLOYEE_SALARY_DISTR -> employee_salary_distribution(requestData);
+			default -> CompanyApi.WRONG_TYPE;
 			};
-			response = responseData == WRONG_TYPE ? new Response(ResponseCode.WRONG_TYPE, requestType)
+			response = responseData == CompanyApi.WRONG_TYPE ? new Response(ResponseCode.WRONG_TYPE, requestType)
 					: new Response(ResponseCode.OK, responseData);
 		} catch (Exception e) {
 			response = new Response(ResponseCode.WRONG_DATA, e.getMessage());

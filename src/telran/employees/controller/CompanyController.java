@@ -48,7 +48,7 @@ public class CompanyController {
 		String name = io.readString("Enter name", "Wrong name", str -> str.matches("[A-Z][a-z]{2,}"));
 		String department = getDepartment(io);
 		int salary = getSalary(io);
-		LocalDate birthDate = io.readIsoDate("Enter birtdate in ISO format", "Wrong birthdate",
+		LocalDate birthDate = io.readIsoDate("Enter birtdate in ISO format  YYYY-MM-DD", "Wrong birthdate",
 				LocalDate.now().minusYears(MAX_AGE), LocalDate.now().minusYears(MIN_AGE).minusDays(1));
 		Employee empl = new Employee(id, name, department, salary, birthDate);
 		boolean res = company.addEmployee(empl);
@@ -128,7 +128,7 @@ public class CompanyController {
 	}
 
 	private static Integer getSalary(InputOutput io) {
-		return io.readInt("Enter new Salary", "Wrong salary", MIN_SALARY, MAX_SALARY);
+		return io.readInt("Enter Salary Value", "Wrong salary", MIN_SALARY, MAX_SALARY);
 	}
 
 	private static void writeResut(InputOutput io, Employee res, String message) {

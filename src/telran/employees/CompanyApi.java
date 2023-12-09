@@ -1,6 +1,7 @@
 package telran.employees;
 
 public interface CompanyApi {
+	static final int SERVER_PORT = 5000;
 	static final String EMPLOYEE_SALARY_UPDATE = "employee/salary/update";
 	static final String EMPLOYEES_ALL = "employees/all";
 	static final String EMPLOYEE_GET = "employee/get";

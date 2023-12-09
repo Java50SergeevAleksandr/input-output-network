@@ -5,8 +5,6 @@ import telran.net.ApplProtocol;
 import telran.net.TcpServer;
 
 public class CompanyServerAppl {
-
-	private static final int PORT = 5000;
 	private static final String DEFAULT_FILE_NAME = "employees";
 
 	public static void main(String[] args) throws Exception {
@@ -14,7 +12,7 @@ public class CompanyServerAppl {
 		Company company = new CompanyImpl();
 		company.restore(fileName);
 		ApplProtocol protocol = new CompanyProtocol(company);
-		TcpServer tcpServer = new TcpServer(PORT, protocol);
+		TcpServer tcpServer = new TcpServer(CompanyApi.SERVER_PORT, protocol);
 		tcpServer.run();
 	}
 

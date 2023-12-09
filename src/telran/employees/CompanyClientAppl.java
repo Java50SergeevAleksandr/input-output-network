@@ -11,13 +11,12 @@ import telran.view.*;
 
 public class CompanyClientAppl {
 
-	private static final String HOST = "localhost";
-	private static final int PORT = 5000;
+	private static final String HOST = "localhost";	
 
 	public static void main(String[] args) {
 		InputOutput io = new SystemInputOutput();
 		try {
-			final TcpClientHandler handler = new TcpClientHandler(HOST, PORT);
+			final TcpClientHandler handler = new TcpClientHandler(HOST, CompanyApi.SERVER_PORT);
 			Company company = new CompanyNetworkProxy(handler);
 			ArrayList<Item> items = CompanyController.getItems(company);
 			items.add(Item.of("Exit", io1 -> {

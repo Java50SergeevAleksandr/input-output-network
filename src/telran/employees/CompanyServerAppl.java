@@ -1,8 +1,11 @@
 package telran.employees;
 
+import java.util.*;
+
 import telran.employees.service.*;
 import telran.net.ApplProtocol;
 import telran.net.TcpServer;
+import telran.view.SystemInputOutput;
 
 public class CompanyServerAppl {
 	private static final String DEFAULT_FILE_NAME = "employees";
@@ -13,7 +16,13 @@ public class CompanyServerAppl {
 		company.restore(fileName);
 		ApplProtocol protocol = new CompanyProtocol(company);
 		TcpServer tcpServer = new TcpServer(CompanyApi.SERVER_PORT, protocol);
-		tcpServer.run();
+		Thread threadServer = new Thread(tcpServer);
+		threadServer.start();
+		SystemInputOutput io = new SystemInputOutput();
+		io.readString("Enter shutdown command for exit", "no shutdown command",
+				new HashSet<String>(List.of("shutdown")));
+		tcpServer.shutdown();
+		company.save(fileName);
 	}
 
 }

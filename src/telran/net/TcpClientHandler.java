@@ -49,7 +49,7 @@ public class TcpClientHandler implements Closeable, NetworkHandler {
 					connect(host, port);
 
 				} catch (IOException e1) {
-					throw new RuntimeException(e.getMessage());
+					throw new RuntimeException(e1.getMessage());
 				}
 
 			} catch (Exception e) {

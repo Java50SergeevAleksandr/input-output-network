@@ -7,8 +7,16 @@ public class TcpClientHandler implements Closeable, NetworkHandler {
 	Socket socket;
 	ObjectOutputStream writer;
 	ObjectInputStream reader;
+	String host;
+	int port;
 
 	public TcpClientHandler(String host, int port) throws Exception {
+		this.host = host;
+		this.port = port;
+		connect(host, port);
+	}
+
+	private void connect(String host, int port) throws UnknownHostException, IOException {
 		socket = new Socket(host, port);
 		writer = new ObjectOutputStream(socket.getOutputStream());
 		reader = new ObjectInputStream(socket.getInputStream());
@@ -25,17 +33,30 @@ public class TcpClientHandler implements Closeable, NetworkHandler {
 	@Override
 	public <T> T send(String requestType, Serializable requestData) {
 		Request request = new Request(requestType, requestData);
-		try {
-			writer.writeObject(request);
-			Response response = (Response) reader.readObject();
-			if (response.code() != ResponseCode.OK) {
-				throw new Exception(response.responseData().toString());
-			}
-			return (T) response.responseData();
+		boolean running = true;
+		while (running) {
+			try {
+				writer.writeObject(request);
+				Response response = (Response) reader.readObject();
+				if (response.code() != ResponseCode.OK) {
+					throw new Exception(response.responseData().toString());
+				}
+				return (T) response.responseData();
 
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
+			} catch (SocketException e) {
+				try {
+					close();
+					connect(host, port);
+
+				} catch (IOException e1) {
+					throw new RuntimeException(e.getMessage());
+				}
+
+			} catch (Exception e) {
+				throw new RuntimeException(e.getMessage());
+			}
 		}
+		return null;
 
 	}
 

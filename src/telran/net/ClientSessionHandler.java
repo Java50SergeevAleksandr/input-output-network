@@ -17,7 +17,9 @@ public class ClientSessionHandler implements Runnable {
 
 	@Override
 	public void run() {
-		while (!tcpServer.executor.isShutdown()) {
+		boolean isOpen = true;
+		int totalIdleTime = 0;
+		while (!tcpServer.executor.isShutdown() && isOpen) {
 			try (socket;
 					ObjectInputStream reader = new ObjectInputStream(socket.getInputStream());
 					ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream());) {
@@ -30,7 +32,12 @@ public class ClientSessionHandler implements Runnable {
 				writer.reset();
 
 			} catch (SocketTimeoutException e) {
-				// for exit from readObject to another iteration of cycle
+				totalIdleTime += TcpServer.IDLE_TIMEOUT;
+				if (totalIdleTime >= TcpServer.TOTAL_IDLE_TIMEOUT
+						&& tcpServer.connectedClients.get() > tcpServer.nThreads) {
+					isOpen = false;
+					tcpServer.connectedClients.decrementAndGet();
+				}
 			} catch (EOFException e) {
 				System.out.println("Client " + socket.getRemoteSocketAddress() + " closed connection");
 			} catch (Exception e) {

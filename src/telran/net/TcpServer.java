@@ -3,14 +3,17 @@ package telran.net;
 import java.net.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TcpServer implements Runnable, AutoCloseable {
 	public static final int IDLE_TIMEOUT = 100;
+	public static final int TOTAL_IDLE_TIMEOUT = 5000;
 	private int port;
 	private ApplProtocol protocol;
 	private ServerSocket serverSocket;
 	ExecutorService executor;
-	private int nThreads = Runtime.getRuntime().availableProcessors();
+	int nThreads = Runtime.getRuntime().availableProcessors();
+	AtomicInteger connectedClients = new AtomicInteger();
 
 	public TcpServer(int port, ApplProtocol protocol) throws Exception {
 		this.port = port;
@@ -28,6 +31,7 @@ public class TcpServer implements Runnable, AutoCloseable {
 				Socket socket = serverSocket.accept();
 				socket.setSoTimeout(IDLE_TIMEOUT);
 				ClientSessionHandler client = new ClientSessionHandler(socket, protocol, this);
+				connectedClients.incrementAndGet();
 				System.out.println("Client " + socket.getRemoteSocketAddress() + " is connected");
 				executor.execute(client);
 			} catch (SocketTimeoutException e) {

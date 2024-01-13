@@ -33,8 +33,7 @@ public class TcpClientHandler implements Closeable, NetworkHandler {
 	@Override
 	public <T> T send(String requestType, Serializable requestData) {
 		Request request = new Request(requestType, requestData);
-		boolean running = true;
-		while (running) {
+		while (true) {
 			try {
 				writer.writeObject(request);
 				Response response = (Response) reader.readObject();
@@ -45,6 +44,7 @@ public class TcpClientHandler implements Closeable, NetworkHandler {
 
 			} catch (SocketException e) {
 				try {
+					System.out.println("Reconnect");
 					close();
 					connect(host, port);
 
@@ -56,8 +56,6 @@ public class TcpClientHandler implements Closeable, NetworkHandler {
 				throw new RuntimeException(e.getMessage());
 			}
 		}
-		return null;
-
 	}
 
 }

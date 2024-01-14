@@ -16,10 +16,14 @@ public class TcpClientHandler implements Closeable, NetworkHandler {
 		connect(host, port);
 	}
 
-	private void connect(String host, int port) throws UnknownHostException, IOException {
-		socket = new Socket(host, port);
-		writer = new ObjectOutputStream(socket.getOutputStream());
-		reader = new ObjectInputStream(socket.getInputStream());
+	private void connect(String host, int port) {
+		try {
+			socket = new Socket(host, port);
+			writer = new ObjectOutputStream(socket.getOutputStream());
+			reader = new ObjectInputStream(socket.getInputStream());
+		} catch (Exception e) {
+			throw new RuntimeException("server is unavailable, please repeat request later on");
+		}
 	}
 
 	@Override

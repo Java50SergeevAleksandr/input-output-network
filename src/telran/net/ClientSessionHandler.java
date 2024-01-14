@@ -35,16 +35,22 @@ public class ClientSessionHandler implements Runnable {
 				totalIdleTime += TcpServer.IDLE_TIMEOUT;
 				if (totalIdleTime >= TcpServer.TOTAL_IDLE_TIMEOUT
 						&& tcpServer.connectedClients.get() > tcpServer.nThreads) {
-					isOpen = false;
-					tcpServer.connectedClients.decrementAndGet();
+					isOpen = clodeAndDecr();
 				}
 			} catch (EOFException e) {
 				System.out.println("Client " + socket.getRemoteSocketAddress() + " closed connection");
+				isOpen = clodeAndDecr();
 			} catch (Exception e) {
 				System.out.println("Abnormal closing connection, client " + socket.getRemoteSocketAddress());
+				isOpen = clodeAndDecr();
 			}
 		}
 
+	}
+
+	private boolean clodeAndDecr() {
+		tcpServer.connectedClients.decrementAndGet();
+		return false;
 	}
 
 }

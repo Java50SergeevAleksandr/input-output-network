@@ -8,12 +8,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TcpServer implements Runnable, AutoCloseable {
 	public static final int IDLE_TIMEOUT = 100;
-	public static final int TOTAL_IDLE_TIMEOUT = 5000;
+	public static final int TOTAL_IDLE_TIMEOUT = 30000;
 	private int port;
 	private ApplProtocol protocol;
 	private ServerSocket serverSocket;
 	ExecutorService executor;
-	int nThreads = Runtime.getRuntime().availableProcessors();
+	int nThreads = 2; // Runtime.getRuntime().availableProcessors();
 	AtomicInteger connectedClients = new AtomicInteger();
 
 	public TcpServer(int port, ApplProtocol protocol) throws Exception {
@@ -30,9 +30,9 @@ public class TcpServer implements Runnable, AutoCloseable {
 		while (!executor.isShutdown()) {
 			try {
 				Socket socket = serverSocket.accept();
+				connectedClients.incrementAndGet();
 				socket.setSoTimeout(IDLE_TIMEOUT);
 				ClientSessionHandler client = new ClientSessionHandler(socket, protocol, this);
-				connectedClients.incrementAndGet();
 				System.out.println("Client " + socket.getRemoteSocketAddress() + " is connected");
 				executor.execute(client);
 			} catch (SocketTimeoutException e) {

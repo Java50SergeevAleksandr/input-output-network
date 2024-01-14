@@ -19,38 +19,34 @@ public class ClientSessionHandler implements Runnable {
 	public void run() {
 		boolean isOpen = true;
 		int totalIdleTime = 0;
-		while (!tcpServer.executor.isShutdown() && isOpen) {
-			try (socket;
-					ObjectInputStream reader = new ObjectInputStream(socket.getInputStream());
-					ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream());) {
 
-				Request request = (Request) reader.readObject();
-				Response response = protocol.getResponse(request);
-				writer.writeObject(response);
-				System.out.println(
-						"Server sent a response --" + response + "-- to client" + socket.getRemoteSocketAddress());
-				writer.reset();
-
-			} catch (SocketTimeoutException e) {
-				totalIdleTime += TcpServer.IDLE_TIMEOUT;
-				if (totalIdleTime >= TcpServer.TOTAL_IDLE_TIMEOUT
-						&& tcpServer.connectedClients.get() > tcpServer.nThreads) {
-					isOpen = clodeAndDecr();
+		try (socket;
+				ObjectInputStream reader = new ObjectInputStream(socket.getInputStream());
+				ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream());) {
+			while (!tcpServer.executor.isShutdown() && isOpen) {
+				try {
+					Request request = (Request) reader.readObject();
+					Response response = protocol.getResponse(request);
+					writer.writeObject(response);
+					System.out.println(
+							"Server sent a response --" + response + "-- to client" + socket.getRemoteSocketAddress());
+					writer.reset();
+				} catch (SocketTimeoutException e) {
+					totalIdleTime += TcpServer.IDLE_TIMEOUT;
+					if (totalIdleTime >= TcpServer.TOTAL_IDLE_TIMEOUT
+							&& tcpServer.connectedClients.get() > tcpServer.nThreads) {
+						isOpen = false;
+						tcpServer.connectedClients.decrementAndGet();
+					}
 				}
-			} catch (EOFException e) {
-				System.out.println("Client " + socket.getRemoteSocketAddress() + " closed connection");
-				isOpen = clodeAndDecr();
-			} catch (Exception e) {
-				System.out.println("Abnormal closing connection, client " + socket.getRemoteSocketAddress());
-				isOpen = clodeAndDecr();
 			}
-		}
-
-	}
-
-	private boolean clodeAndDecr() {
-		tcpServer.connectedClients.decrementAndGet();
-		return false;
+		} catch (EOFException e) {
+			tcpServer.connectedClients.decrementAndGet();
+			System.out.println("Client " + socket.getRemoteSocketAddress() + " closed connection");
+		} catch (Exception e) {
+			tcpServer.connectedClients.decrementAndGet();
+			System.out.println("Abnormal closing connection, client " + socket.getRemoteSocketAddress());			
+		} 
 	}
 
 }

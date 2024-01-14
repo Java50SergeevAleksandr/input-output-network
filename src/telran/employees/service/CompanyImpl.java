@@ -46,6 +46,7 @@ public class CompanyImpl implements Company {
 	@Override
 	public Employee removeEmployee(long id) {
 		try {
+			writeLock.lock();
 			Employee empl = employees.remove(id);
 			if (empl != null) {
 				removeFromIndex(empl, employeesByAge, Employee::birthDate);
@@ -83,6 +84,7 @@ public class CompanyImpl implements Company {
 	@Override
 	public List<Employee> getEmployees() {
 		try {
+			readLock.lock();
 			return employees.values().stream().sorted(Comparator.comparingLong(Employee::id)).toList();
 			// return new ArrayList<>(employees.values());
 		} finally {
@@ -93,6 +95,7 @@ public class CompanyImpl implements Company {
 	// Unmodifiable view
 	public Collection<Employee> getEmployeesView() {
 		try {
+			readLock.lock();
 			return Collections.unmodifiableCollection(employees.values());
 		} finally {
 			readLock.unlock();
@@ -102,6 +105,7 @@ public class CompanyImpl implements Company {
 	@Override
 	public List<DepartmentSalary> getDepartmentSalaryDistribution() {
 		try {
+			readLock.lock();
 			return employeesByDepartment.entrySet().stream()
 					.map(d -> new DepartmentSalary(d.getKey(),
 							d.getValue().stream().collect(Collectors.averagingDouble(e -> e.salary()))))
@@ -114,6 +118,7 @@ public class CompanyImpl implements Company {
 	@Override
 	public List<SalaryDistribution> getSalaryDistribution(int interval) {
 		try {
+			readLock.lock();
 			Map<Integer, Long> mapIntervalNumbers = employees.values().stream()
 					.collect(Collectors.groupingBy(e -> e.salary() / interval, Collectors.counting()));
 			return mapIntervalNumbers
@@ -128,6 +133,7 @@ public class CompanyImpl implements Company {
 	@Override
 	public List<Employee> getEmployeesByDepartment(String department) {
 		try {
+			readLock.lock();
 			Collection<Employee> employeesCol = employeesByDepartment.get(department);
 			ArrayList<Employee> res = new ArrayList<>();
 			if (employeesCol != null) {
@@ -142,6 +148,7 @@ public class CompanyImpl implements Company {
 	@Override
 	public List<Employee> getEmployeesBySalary(int salaryFrom, int salaryTo) {
 		try {
+			readLock.lock();
 			return employeesBySalary.subMap(salaryFrom, salaryTo).values().stream().flatMap(Set::stream).toList();
 		} finally {
 			readLock.unlock();
@@ -151,6 +158,7 @@ public class CompanyImpl implements Company {
 	@Override
 	public List<Employee> getEmployeesByAge(int ageFrom, int ageTo) {
 		try {
+			readLock.lock();
 			LocalDate dateTo = getDate(ageFrom);
 			LocalDate dateFrom = getDate(ageTo);
 			return employeesByAge.subMap(dateFrom, dateTo).values().stream().flatMap(Set::stream).toList();
@@ -170,6 +178,7 @@ public class CompanyImpl implements Company {
 	@Override
 	public Employee updateSalary(long id, int newSalary) {
 		try {
+			writeLock.lock();
 			Employee empl = removeEmployee(id);
 			if (empl != null) {
 				Employee newEmpl = new Employee(id, empl.name(), empl.department(), newSalary, empl.birthDate());
@@ -185,6 +194,7 @@ public class CompanyImpl implements Company {
 	@Override
 	public Employee updateDepartment(long id, String department) {
 		try {
+			writeLock.lock();
 			Employee empl = removeEmployee(id);
 			if (empl != null) {
 				Employee newEmpl = new Employee(id, empl.name(), department, empl.salary(), empl.birthDate());

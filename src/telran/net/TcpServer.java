@@ -13,7 +13,7 @@ public class TcpServer implements Runnable, AutoCloseable {
 	private ApplProtocol protocol;
 	private ServerSocket serverSocket;
 	ExecutorService executor;
-	int nThreads = 2; // Runtime.getRuntime().availableProcessors();
+	int nThreads = Runtime.getRuntime().availableProcessors();
 	AtomicInteger connectedClients = new AtomicInteger();
 
 	public TcpServer(int port, ApplProtocol protocol) throws Exception {

@@ -10,8 +10,8 @@ public interface CompanyApi {
 	static final String EMPLOYEE_REMOVE = "employee/remove";
 	static final String EMPLOYEE_DEP_SALARY_DISTR = "employee/department/salaryDistribution";
 	static final String EMPLOYEE_SALARY_DISTR = "employee/salary/distribution";
-	static final String EMPLOYEE_GET_BY_DEP = "employee/getBydepartment";
-	static final String EMPLOYEE_GET_BY_SALARY = "employee/getBySalary";
-	static final String EMPLOYEE_GET_BY_AGE = "employee/getByAge";
+	static final String EMPLOYEE_GET_BY_DEP = "employee/get/byDepartment";
+	static final String EMPLOYEE_GET_BY_SALARY = "employee/get/bySalary";
+	static final String EMPLOYEE_GET_BY_AGE = "employee/get/byAge";
 	static final String EMPLOYEE_DEP_UPDATE = "employee/department/update";
 }

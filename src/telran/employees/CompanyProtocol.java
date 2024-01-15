@@ -1,6 +1,7 @@
 package telran.employees;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import telran.employees.dto.*;
@@ -21,25 +22,15 @@ public class CompanyProtocol implements ApplProtocol {
 	public Response getResponse(Request request) {
 		Serializable requestData = request.requestData();
 		String requestType = request.requestType();
-		Response response = null;
+		Response response = new Response(ResponseCode.WRONG_TYPE, requestType);
 		Serializable responseData;
 		try {
-			responseData = switch (requestType) {
-			case CompanyApi.EMPLOYEE_ADD -> employee_add(requestData);
-			case CompanyApi.EMPLOYEE_REMOVE -> employee_remove(requestData);
-			case CompanyApi.EMPLOYEE_GET -> employee_get(requestData);
-			case CompanyApi.EMPLOYEES_ALL -> employees_all(requestData);
-			case CompanyApi.EMPLOYEE_SALARY_UPDATE -> employee_salary_update(requestData);
-			case CompanyApi.EMPLOYEE_DEP_SALARY_DISTR -> employee_department_salaryDistribution(requestData);
-			case CompanyApi.EMPLOYEE_DEP_UPDATE -> employee_department_update(requestData);
-			case CompanyApi.EMPLOYEE_GET_BY_AGE -> employee_get_byAge(requestData);
-			case CompanyApi.EMPLOYEE_GET_BY_SALARY -> employee_get_bySalary(requestData);
-			case CompanyApi.EMPLOYEE_GET_BY_DEP -> employee_get_byDepartment(requestData);
-			case CompanyApi.EMPLOYEE_SALARY_DISTR -> employee_salary_distribution(requestData);
-			default -> CompanyApi.WRONG_TYPE;
-			};
-			response = responseData == CompanyApi.WRONG_TYPE ? new Response(ResponseCode.WRONG_TYPE, requestType)
-					: new Response(ResponseCode.OK, responseData);
+			Method method = CompanyProtocol.class.getDeclaredMethod(requestType.replace('/', '_'), Serializable.class);
+			method.setAccessible(true);
+			responseData = (Serializable) method.invoke(this, requestData);
+			response = new Response(ResponseCode.OK, responseData);
+		} catch (NoSuchMethodException e) {
+			System.out.println(e.toString());
 		} catch (Exception e) {
 			response = new Response(ResponseCode.WRONG_DATA, e.getMessage());
 		}

@@ -11,6 +11,7 @@ import telran.net.Request;
 import telran.net.Response;
 import telran.net.ResponseCode;
 
+@SuppressWarnings("unused")
 public class CompanyProtocol implements ApplProtocol {
 	private Company company;
 
